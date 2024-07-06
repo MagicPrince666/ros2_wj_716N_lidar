@@ -9,10 +9,12 @@
 #include <string>
 #include <unistd.h>
 #include <vector>
+#include <filesystem>
+#include <memory>
+#include <thread>
 #include "wj_716N_lidar_protocol.h"
 
 using namespace std;
-using boost::asio::ip::tcp;
 using namespace boost::asio;
 using namespace wj_lidar;
 
@@ -38,7 +40,7 @@ private:
     int m_iServerPort;
     io_service m_io;
     ip::tcp::endpoint m_ep;
-    boost::shared_ptr<ip::tcp::socket> m_pSocket;
+    std::shared_ptr<boost::asio::ip::tcp::socket> m_pSocket;
     boost::system::error_code ec;
 
     unsigned char m_aucReceiveBuffer[MAX_LENGTH];

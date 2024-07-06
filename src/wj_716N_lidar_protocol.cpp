@@ -3,6 +3,7 @@
 
 namespace wj_lidar
 {
+#if defined(USE_ROS_NORTIC_VERSION) || defined(USE_ROS_MELODIC_VERSION)
     bool wj_716N_lidar_protocol::setConfig(wj_716N_lidar::wj_716N_lidarConfig &new_config, uint32_t level)
     {
         config_ = new_config;
@@ -43,20 +44,21 @@ namespace wj_lidar
         cout << "samples_per_scan:" << samples << endl;
         return true;
     }
+#endif
 
 #if defined(USE_ROS_NORTIC_VERSION) || defined(USE_ROS_MELODIC_VERSION)
-    wj_716N_lidar_protocol::wj_716N_lidar_protocol(std::shared_ptr<ros::NodeHandle> node);
+    wj_716N_lidar_protocol::wj_716N_lidar_protocol(std::shared_ptr<ros::NodeHandle> node)
 #else
-    wj_716N_lidar_protocol::wj_716N_lidar_protocol(std::shared_ptr<rclcpp::Node> node);
+    wj_716N_lidar_protocol::wj_716N_lidar_protocol(std::shared_ptr<rclcpp::Node> node)
 #endif
     : ros_node_(node)
     {
         memset(&m_sdata, 0, sizeof(m_sdata));
 #if defined(USE_ROS_NORTIC_VERSION) || defined(USE_ROS_MELODIC_VERSION)
-        marker_pub = ros_node_->advertise<LaserScanMsg>("scan", 50);
+        marker_pub_ = ros_node_->advertise<LaserScanMsg>("scan", 50);
         ros::Time scan_time = ros::Time::now();
 #else
-        marker_pub = ros_node_->create_publisher<LaserScanMsg>("scan", 50);
+        marker_pub_ = ros_node_->create_publisher<LaserScanMsg>("scan", 50);
         rclcpp::Time scan_time = ros_node_->get_clock()->now();
 #endif
 

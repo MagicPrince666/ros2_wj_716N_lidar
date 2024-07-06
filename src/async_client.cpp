@@ -5,7 +5,7 @@ Async_Client::Async_Client(wj_716N_lidar_protocol *protocol)
     m_pProtocol = protocol;
     m_bConnected = false;
     m_bReconnecting = false;
-    m_pSocket = boost::shared_ptr<ip::tcp::socket>(new ip::tcp::socket(m_io));
+    m_pSocket = std::shared_ptr<ip::tcp::socket>(new ip::tcp::socket(m_io));
     cout << "TCP-Connection is initialized!" << endl;
 }
 
@@ -18,12 +18,10 @@ bool Async_Client::connect(string ip, int port)
 {
     try
     {
-        if (m_bConnected)
-        {
+        if (m_bConnected) {
             return false;
         }
-        if(m_pSocket->is_open())
-        {
+        if(m_pSocket->is_open()) {
             boost::system::error_code errorcode;
             m_pSocket->shutdown(ip::tcp::socket::shutdown_both, errorcode);
             m_pSocket->close();
@@ -40,11 +38,11 @@ bool Async_Client::connect(string ip, int port)
         else
         {
             m_bConnected = true;
-            boost::thread recvThread(boost::bind(&Async_Client::recvData,this));
+            std::thread recvThread(std::bind(&Async_Client::recvData,this));
             return true;
         }
     }
-    catch (boost::exception &e)
+    catch (std::exception &e)
     {
         return false;
     }
@@ -56,15 +54,14 @@ bool Async_Client::disconnect()
     {
         cout << "Disconnecting connection!" << endl;
         m_bConnected = false;
-        if(m_pSocket->is_open())
-        {
+        if(m_pSocket->is_open()) {
             boost::system::error_code errorcode;
             m_pSocket->shutdown(ip::tcp::socket::shutdown_both, errorcode);
             m_pSocket->close();
         }
         return true;
     }
-    catch(boost::exception& e)
+    catch(std::exception& e)
     {
         return false;
     }
@@ -74,11 +71,9 @@ void Async_Client::recvData()
 {
     try
     {
-        while (m_bConnected)
-        {
+        while (m_bConnected) {
             size_t len = m_pSocket->read_some(boost::asio::buffer(m_aucReceiveBuffer));
-            if (len > 0)
-            {
+            if (len > 0) {
                 m_pProtocol->dataProcess(m_aucReceiveBuffer,len);
             }
         }
@@ -92,10 +87,8 @@ void Async_Client::recvData()
 void Async_Client::reconnect()
 {
     m_bReconnecting = true;
-    while (!m_bConnected)
-    {
-        if (m_pSocket->is_open())
-        {
+    while (!m_bConnected) {
+        if (m_pSocket->is_open()) {
             boost::system::error_code errorcode;
             m_pSocket->shutdown(ip::tcp::socket::shutdown_both, errorcode);
             m_pSocket->close();
@@ -104,13 +97,10 @@ void Async_Client::reconnect()
         sleep(3);
         cout << "Start reconnecting laser!" << endl;
         sleep(2);
-        if (connect(m_sServerIp, m_iServerPort))
-        {
+        if (connect(m_sServerIp, m_iServerPort)) {
             cout << "Succesfully connected!" << endl;
             break;
-        }
-        else
-        {
+        } else {
             cout << "Failed to reconnect!" << endl;
         }
         sleep(2);
@@ -125,17 +115,12 @@ bool Async_Client::SendData(unsigned char buf[], int length)
         if (m_pSocket->is_open() && m_bConnected)
         {
             size_t st = m_pSocket->send(buffer(buf, length));
-            if (st == length)
-            {
+            if (st == length) {
                 return true;
-            }
-            else
-            {
+            } else {
                 return false;
             }
-        }
-        else
-        {
+        } else {
             return false;
         }
     }

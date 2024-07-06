@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.8)
 project(ros2_wj_716N_lidar)
 
 # Default to C99
@@ -9,6 +9,10 @@ endif()
 # Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 14)
+endif()
+
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
 message(STATUS "${LIB_NAME} Ros version : $ENV{ROS_DISTRO}")
@@ -55,25 +59,21 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 ## Generate dynamic reconfigure parameters in the 'cfg' folder
- generate_dynamic_reconfigure_options(
+generate_dynamic_reconfigure_options(
     cfg/wj_716N_lidar.cfg
-
-  )
-
-catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES wj_716N_lidar
-#  CATKIN_DEPENDS roscpp
-#  DEPENDS system_lib
 )
 
 include_directories(
-  include ${catkin_INCLUDE_DIRS}
   ${catkin_INCLUDE_DIRS}
 )
 
+catkin_package(
+  CATKIN_DEPENDS
+  message_runtime
+)
+
 add_executable(${PROJECT_NAME} ${main_srcs})
-add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_gencfg)
+add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_gencfg)
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 
 install(DIRECTORY ${PROJECT_NAME}
@@ -86,14 +86,16 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
+find_package(Boost REQUIRED)
 
 include_directories(
     ${roscpp_INCLUDE_DIRS}
     ${roslib_INCLUDE_DIRS}
+    ${Boost_INCLUDE_DIRS}
 )
 
 add_executable(${PROJECT_NAME} ${main_srcs})
-target_link_libraries(${PROJECT_NAME})
+target_link_libraries(${PROJECT_NAME} pthread ${Boost_LIBRARIES})
 ament_target_dependencies(${PROJECT_NAME} rclcpp std_msgs geometry_msgs sensor_msgs)
 
 install(TARGETS
