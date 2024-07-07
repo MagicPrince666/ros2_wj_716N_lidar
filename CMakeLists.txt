@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(ros2_wj_716N_lidar)
+project(ros2_wj_716n_lidar)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
