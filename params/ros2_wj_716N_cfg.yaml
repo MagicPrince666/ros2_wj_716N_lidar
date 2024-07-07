@@ -1,4 +1,4 @@
-/ros2_wj_716N_lidar:
+/ros2_wj_716n_lidar:
   ros__parameters:
     hostname: "192.168.1.50"
     port: "2110"

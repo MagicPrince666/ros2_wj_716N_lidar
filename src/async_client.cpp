@@ -11,6 +11,9 @@ Async_Client::Async_Client(wj_716N_lidar_protocol *protocol)
 
 Async_Client::~Async_Client()
 {
+    if (recv_thread_.joinable()) {
+        recv_thread_.join();
+    }
     disconnect();
 }
 
@@ -30,15 +33,12 @@ bool Async_Client::connect(string ip, int port)
         m_iServerPort = port;
         m_ep = ip::tcp::endpoint(ip::address::from_string(ip), port);
         m_pSocket->connect(m_ep,ec);
-        if(ec)
-        {
+        if(ec) {
             m_bConnected = false;
             return false;
-        }
-        else
-        {
+        } else {
             m_bConnected = true;
-            std::thread recvThread(std::bind(&Async_Client::recvData,this));
+            recv_thread_ = std::thread([](Async_Client *p_this) { p_this->recvData(); }, this);
             return true;
         }
     }

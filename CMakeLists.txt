@@ -15,6 +15,11 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
+# set(CMAKE_BUILD_TYPE "Debug")
+if (${CMAKE_BUILD_TYPE} MATCHES "Debug")
+  add_definitions(-DBACKTRACE_DEBUG)
+endif()
+
 message(STATUS "${LIB_NAME} Ros version : $ENV{ROS_DISTRO}")
 if ($ENV{ROS_DISTRO} MATCHES "iron")
   add_definitions(-DUSE_IRON_VERSION)

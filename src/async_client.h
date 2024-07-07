@@ -42,6 +42,7 @@ private:
     ip::tcp::endpoint m_ep;
     std::shared_ptr<boost::asio::ip::tcp::socket> m_pSocket;
     boost::system::error_code ec;
+    std::thread recv_thread_;
 
     unsigned char m_aucReceiveBuffer[MAX_LENGTH];
 };
