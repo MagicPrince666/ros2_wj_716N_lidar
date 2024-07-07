@@ -152,25 +152,24 @@ int main(int argc, char **argv)
         loop_5s_rate.sleep();
     }
 
-    // rclcpp::Rate loop_rate(2);
-    // while(rclcpp::ok()) {
-    //     rclcpp::spin_some(node);
-    //     loop_rate.sleep();
-    //     if(client->m_bConnected) {
-    //         if(protocol->heartstate) {
-    //             protocol->heartstate = false;
-    //         } else {
-    //             client->m_bConnected = false;
-    //         }
-    //     } else {
-    //         //reconnect
-    //         if(!client->m_bReconnecting) {
-    //             std::thread t(std::bind(&Async_Client::reconnect, client));
-    //         }
-    //     }
-    // }
+    rclcpp::Rate loop_rate(2);
+    while(rclcpp::ok()) {
+        loop_rate.sleep();
+        if(client->m_bConnected) {
+            if(protocol->heartstate) {
+                protocol->heartstate = false;
+            } else {
+                client->m_bConnected = false;
+            }
+        } else {
+            //reconnect
+            if(!client->m_bReconnecting) {
+                std::thread t(std::bind(&Async_Client::reconnect, client));
+            }
+        }
+    }
 
-    rclcpp::spin(node);
+    // rclcpp::spin(node);
     rclcpp::shutdown();
 #endif
 }

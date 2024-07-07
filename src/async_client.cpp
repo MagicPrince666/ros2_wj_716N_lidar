@@ -72,14 +72,12 @@ void Async_Client::recvData()
     try
     {
         while (m_bConnected) {
-            size_t len = m_pSocket->read_some(boost::asio::buffer(m_aucReceiveBuffer));
+            int len = m_pSocket->read_some(boost::asio::buffer(m_aucReceiveBuffer));
             if (len > 0) {
                 m_pProtocol->dataProcess(m_aucReceiveBuffer,len);
             }
         }
-    }
-    catch (std::exception e)
-    {
+    } catch (std::exception e) {
     }
     m_bConnected = false;
 }
@@ -114,7 +112,7 @@ bool Async_Client::SendData(unsigned char buf[], int length)
     {
         if (m_pSocket->is_open() && m_bConnected)
         {
-            size_t st = m_pSocket->send(buffer(buf, length));
+            int st = m_pSocket->send(buffer(buf, length));
             if (st == length) {
                 return true;
             } else {
