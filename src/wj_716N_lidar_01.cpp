@@ -33,12 +33,10 @@ int main(int argc, char **argv)
     cout << "laser ip: " << hostname << ", port:" << port <<endl;
 
     auto protocol = std::make_shared<wj_716N_lidar_protocol>(node);
-#if defined(USE_ROS_NORTIC_VERSION) || defined(USE_ROS_MELODIC_VERSION)
     dynamic_reconfigure::Server<wj_716N_lidar::wj_716N_lidarConfig> server;
     dynamic_reconfigure::Server<wj_716N_lidar::wj_716N_lidarConfig>::CallbackType f;
     f = std::bind(&callback, std::placeholders::_1, std::placeholders::_2);
     server.setCallback(f);
-#endif
 
     client = new Async_Client(protocol.get());
     protocol->heartstate = false;
@@ -115,7 +113,7 @@ int main(int argc, char **argv)
         }
     }
 
-    rclcpp::spin(node);
+    // rclcpp::spin(node);
     rclcpp::shutdown();
 #endif
 }

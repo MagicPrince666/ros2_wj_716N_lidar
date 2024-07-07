@@ -1,7 +1,9 @@
 /ros2_wj_716N_lidar:
   ros__parameters:
-    min_ang : -3.14
-    max_ang : 3.14
+    hostname: "192.168.1.50"
+    port: "2110"
+    min_ang : -2.35619449
+    max_ang : 2.35619449
     range_min : 0.0
     range_max : 30.0
     frequency_scan : 1
