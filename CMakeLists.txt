@@ -100,7 +100,7 @@ include_directories(
 )
 
 add_executable(${PROJECT_NAME} ${main_srcs})
-target_link_libraries(${PROJECT_NAME} pthread ${Boost_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} pthread ${Boost_LIBRARIES} boost_system)
 ament_target_dependencies(${PROJECT_NAME} rclcpp std_msgs geometry_msgs sensor_msgs)
 
 install(TARGETS

@@ -1,5 +1,6 @@
 ﻿#include "wj_716N_lidar_protocol.h"
 #include <iostream>
+#include <cmath>
 
 namespace wj_lidar
 {

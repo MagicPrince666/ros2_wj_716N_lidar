@@ -6,10 +6,15 @@
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
 #include <boost/thread.hpp>
+#include <boost/system/error_code.hpp>
 #include <string>
 #include <unistd.h>
 #include <vector>
+#if defined(USE_ELOQUENT_VERSION) || defined(USE_DASHING_VERSION)
+#include <experimental/filesystem>
+#else
 #include <filesystem>
+#endif
 #include <memory>
 #include <thread>
 #include "wj_716N_lidar_protocol.h"
