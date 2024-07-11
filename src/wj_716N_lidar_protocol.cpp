@@ -56,14 +56,11 @@ namespace wj_lidar
     {
         memset(&m_sdata, 0, sizeof(m_sdata));
         std::string frame_id;
-        freq_scan = 1;
 	    m_u32PreFrameNo = 0;
 	    m_u32ExpectedPackageNo = 0;
 	    m_n32currentDataNo = 0;
         total_point = 1081;
 
-        scan.angle_increment = 0.017453 / 4;
-        scan.time_increment = 1 / 15.00000000 / 1440;
 #if defined(USE_ROS_NORTIC_VERSION) || defined(USE_ROS_MELODIC_VERSION)
         marker_pub_ = ros_node_->advertise<LaserScanMsg>("scan", 50);
         ros::Time scan_time = ros::Time::now();
@@ -72,16 +69,22 @@ namespace wj_lidar
         marker_pub_ = ros_node_->create_publisher<LaserScanMsg>("scan", 50);
         rclcpp::Time scan_time = ros_node_->get_clock()->now();
         ros_node_->declare_parameter<std::string>("frame_id", frame_id);
+        ros_node_->declare_parameter<int>("frequency_scan", 1);
         ros_node_->declare_parameter<double>("min_ang", -2.35619449);
         ros_node_->declare_parameter<double>("max_ang", 2.35619449);
         ros_node_->declare_parameter<double>("range_min", 0.0);
         ros_node_->declare_parameter<double>("range_max", 30.0);
+        ros_node_->declare_parameter<double>("angle_increment", 0.017453 / 4);
+        ros_node_->declare_parameter<double>("time_increment", 1 / 15.00000000 / 1440);
 
         ros_node_->get_parameter("frame_id", frame_id);
+        ros_node_->get_parameter("frequency_scan", freq_scan);
         ros_node_->get_parameter("min_ang", scan.angle_min);
         ros_node_->get_parameter("max_ang", scan.angle_max);
         ros_node_->get_parameter("range_min", scan.range_min);
         ros_node_->get_parameter("range_max", scan.range_max);
+        ros_node_->get_parameter("angle_increment", scan.angle_increment);
+        ros_node_->get_parameter("time_increment", scan.time_increment);
 #endif
         scan.header.stamp = scan_time;
         scan.header.frame_id = frame_id;

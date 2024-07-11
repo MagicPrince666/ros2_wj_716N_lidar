@@ -60,8 +60,6 @@ static void _signal_handler(int signum)
 /* ------------------------------------------------------------------------------------------
  *  show demo --
  * ------------------------------------------------------------------------------------------ */
-wj_716N_lidar_protocol *protocol;
-Async_Client *client;
 
 #if defined(USE_ROS_NORTIC_VERSION) || defined(USE_ROS_MELODIC_VERSION)
 void callback(wj_716N_lidar::wj_716N_lidarConfig &config,uint32_t level)
@@ -87,7 +85,7 @@ int main(int argc, char **argv)
     node->getParam("hostname", hostname);
     std::string port;
     node->getParam("port", port);
-    cout << "laser ip: " << hostname << ", port:" << port <<endl;
+    std::cout << "laser ip: " << hostname << ", port:" << port << std::endl;
 
     auto protocol = std::make_shared<wj_716N_lidar_protocol>(node);
     dynamic_reconfigure::Server<wj_716N_lidar::wj_716N_lidarConfig> server;
@@ -95,7 +93,7 @@ int main(int argc, char **argv)
     f = std::bind(&callback, std::placeholders::_1, std::placeholders::_2);
     server.setCallback(f);
 
-    client = new Async_Client(protocol.get());
+    auto client = std::make_shared<Async_Client>(protocol.get());
     protocol->heartstate = false;
     while(!client->m_bConnected) {
         ROS_INFO("Start connecting laser!");
@@ -136,15 +134,15 @@ int main(int argc, char **argv)
     // get ros2 param
     node->get_parameter("hostname", hostname);
     node->get_parameter("port", port);
-    cout << "laser ip: " << hostname << ", port:" << port <<endl;
-    std::unique_ptr<wj_716N_lidar_protocol> protocol(new wj_716N_lidar_protocol(node));
+    std::cout << "laser ip: " << hostname << ", port:" << port << std::endl;
+    auto protocol = std::make_shared<wj_716N_lidar_protocol>(node);
 
-    client = new Async_Client(protocol.get());
+    auto client = std::make_shared<Async_Client>(protocol.get());
     protocol->heartstate = false;
     rclcpp::Rate loop_5s_rate(5);
     while(!client->m_bConnected) {
         RCLCPP_INFO(node->get_logger(), "Start connecting laser!");
-        if(client->connect(hostname.c_str(),atoi(port.c_str()))) {
+        if(client->connect(hostname.c_str(), atoi(port.c_str()))) {
             RCLCPP_INFO(node->get_logger(), "Succesfully connected. Hello wj_716N_lidar!");
         } else {
             RCLCPP_INFO(node->get_logger(), "Failed to connect to laser. Waiting 5s to reconnect!");
