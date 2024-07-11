@@ -57,8 +57,8 @@ private:
 #if defined(USE_ROS_NORTIC_VERSION) || defined(USE_ROS_MELODIC_VERSION)
     wj_716N_lidar::wj_716N_lidarConfig config_;
 #endif
-    unsigned int m_u32PreFrameNo;
-    unsigned int m_u32ExpectedPackageNo;
+    uint32_t m_u32PreFrameNo;
+    uint32_t m_u32ExpectedPackageNo;
     int m_n32currentDataNo;
     float scandata[1081];
     float scanintensity[1081];

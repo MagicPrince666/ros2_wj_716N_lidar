@@ -54,28 +54,36 @@ namespace wj_lidar
     : ros_node_(node)
     {
         memset(&m_sdata, 0, sizeof(m_sdata));
-#if defined(USE_ROS_NORTIC_VERSION) || defined(USE_ROS_MELODIC_VERSION)
-        marker_pub_ = ros_node_->advertise<LaserScanMsg>("scan", 50);
-        ros::Time scan_time = ros::Time::now();
-#else
-        marker_pub_ = ros_node_->create_publisher<LaserScanMsg>("scan", 50);
-        rclcpp::Time scan_time = ros_node_->get_clock()->now();
-#endif
-
-        scan.header.stamp = scan_time;
+        std::string frame_id;
         freq_scan = 1;
 	    m_u32PreFrameNo = 0;
 	    m_u32ExpectedPackageNo = 0;
 	    m_n32currentDataNo = 0;
         total_point = 1081;
 
-        scan.header.frame_id = "wj_716N_lidar_frame";
-        scan.angle_min = -2.35619449;
-        scan.angle_max = 2.35619449;
         scan.angle_increment = 0.017453 / 4;
         scan.time_increment = 1 / 15.00000000 / 1440;
-        scan.range_min = 0;
-        scan.range_max = 30;
+#if defined(USE_ROS_NORTIC_VERSION) || defined(USE_ROS_MELODIC_VERSION)
+        marker_pub_ = ros_node_->advertise<LaserScanMsg>("scan", 50);
+        ros::Time scan_time = ros::Time::now();
+        ros_node_->getParam("frame_id", frame_id);
+#else
+        marker_pub_ = ros_node_->create_publisher<LaserScanMsg>("scan", 50);
+        rclcpp::Time scan_time = ros_node_->get_clock()->now();
+        ros_node_->declare_parameter<std::string>("frame_id", frame_id);
+        ros_node_->declare_parameter<double>("min_ang", -2.35619449);
+        ros_node_->declare_parameter<double>("max_ang", 2.35619449);
+        ros_node_->declare_parameter<double>("range_min", 0.0);
+        ros_node_->declare_parameter<double>("range_max", 30.0);
+
+        ros_node_->get_parameter("frame_id", frame_id);
+        ros_node_->get_parameter("min_ang", scan.angle_min);
+        ros_node_->get_parameter("max_ang", scan.angle_max);
+        ros_node_->get_parameter("range_min", scan.range_min);
+        ros_node_->get_parameter("range_max", scan.range_max);
+#endif
+        scan.header.stamp = scan_time;
+        scan.header.frame_id = frame_id;
         scan.ranges.resize(1081);
         scan.intensities.resize(1081);
 
@@ -132,7 +140,7 @@ namespace wj_lidar
 
     void wj_716N_lidar_protocol::movedata(DataCache &sdata)
     {
-        for (int i = sdata.m_u32out; i < sdata.m_u32in; i++) {
+        for (uint32_t i = sdata.m_u32out; i < sdata.m_u32in; i++) {
             sdata.m_acdata[i - sdata.m_u32out] = sdata.m_acdata[i];
         }
         sdata.m_u32in = sdata.m_u32in - sdata.m_u32out;
@@ -157,8 +165,8 @@ namespace wj_lidar
     {
         if ((data[22] == 0x02 && data[23] == 0x02) || (data[22] == 0x02 && data[23] == 0x01)) { //command type:0x02 0x01/0X02 
             heartstate = true;
-            int l_n32TotalPackage = data[80];
-            int l_n32PackageNo = data[81];
+            uint32_t l_n32TotalPackage = data[80];
+            uint32_t l_n32PackageNo = data[81];
             unsigned int l_u32FrameNo = (data[75] << 24) + (data[76] << 16) + (data[77] << 8) + data[78];
             int l_n32PointNum = (data[83] << 8) + data[84];
             int l_n32Frequency = data[79];
