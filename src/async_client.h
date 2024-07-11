@@ -19,8 +19,6 @@
 #include <thread>
 #include "wj_716N_lidar_protocol.h"
 
-using namespace std;
-using namespace boost::asio;
 using namespace wj_lidar;
 
 #define MAX_LENGTH 50000
@@ -43,8 +41,8 @@ private:
     wj_716N_lidar_protocol *m_pProtocol;
     string m_sServerIp;
     int m_iServerPort;
-    io_service m_io;
-    ip::tcp::endpoint m_ep;
+    boost::asio::io_service m_io;
+    boost::asio::ip::tcp::endpoint m_ep;
     std::shared_ptr<boost::asio::ip::tcp::socket> m_pSocket;
     boost::system::error_code ec;
     std::thread recv_thread_;

@@ -166,6 +166,7 @@ int main(int argc, char **argv)
             }
         }
     }
+    client->disconnect();
 
     // rclcpp::spin(node);
     rclcpp::shutdown();

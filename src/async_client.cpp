@@ -5,7 +5,7 @@ Async_Client::Async_Client(wj_716N_lidar_protocol *protocol)
     m_pProtocol = protocol;
     m_bConnected = false;
     m_bReconnecting = false;
-    m_pSocket = std::shared_ptr<ip::tcp::socket>(new ip::tcp::socket(m_io));
+    m_pSocket = std::shared_ptr<boost::asio::ip::tcp::socket>(new boost::asio::ip::tcp::socket(m_io));
     cout << "TCP-Connection is initialized!" << endl;
 }
 
@@ -26,12 +26,12 @@ bool Async_Client::connect(string ip, int port)
         }
         if(m_pSocket->is_open()) {
             boost::system::error_code errorcode;
-            m_pSocket->shutdown(ip::tcp::socket::shutdown_both, errorcode);
+            m_pSocket->shutdown(boost::asio::ip::tcp::socket::shutdown_both, errorcode);
             m_pSocket->close();
         }
         m_sServerIp = ip;
         m_iServerPort = port;
-        m_ep = ip::tcp::endpoint(ip::address::from_string(ip), port);
+        m_ep = boost::asio::ip::tcp::endpoint(boost::asio::ip::address::from_string(ip), port);
         m_pSocket->connect(m_ep,ec);
         if(ec) {
             m_bConnected = false;
@@ -56,7 +56,7 @@ bool Async_Client::disconnect()
         m_bConnected = false;
         if(m_pSocket->is_open()) {
             boost::system::error_code errorcode;
-            m_pSocket->shutdown(ip::tcp::socket::shutdown_both, errorcode);
+            m_pSocket->shutdown(boost::asio::ip::tcp::socket::shutdown_both, errorcode);
             m_pSocket->close();
         }
         return true;
@@ -88,7 +88,7 @@ void Async_Client::reconnect()
     while (!m_bConnected) {
         if (m_pSocket->is_open()) {
             boost::system::error_code errorcode;
-            m_pSocket->shutdown(ip::tcp::socket::shutdown_both, errorcode);
+            m_pSocket->shutdown(boost::asio::ip::tcp::socket::shutdown_both, errorcode);
             m_pSocket->close();
             cout << "Initializing network!" << endl;
         }
@@ -112,7 +112,7 @@ bool Async_Client::SendData(unsigned char buf[], int length)
     {
         if (m_pSocket->is_open() && m_bConnected)
         {
-            int st = m_pSocket->send(buffer(buf, length));
+            int st = m_pSocket->send(boost::asio::buffer(buf, length));
             if (st == length) {
                 return true;
             } else {
