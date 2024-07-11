@@ -17,7 +17,7 @@ Async_Client::~Async_Client()
     disconnect();
 }
 
-bool Async_Client::connect(string ip, int port) 
+bool Async_Client::connect(std::string ip, int port) 
 {
     try
     {

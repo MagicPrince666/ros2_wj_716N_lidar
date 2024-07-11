@@ -35,14 +35,14 @@ namespace wj_lidar
         scan.ranges.resize(samples);
         scan.intensities.resize(samples);
 
-        cout << "frame_id:" << scan.header.frame_id << endl;
-        cout << "min_ang:" << scan.angle_min << endl;
-        cout << "max_ang:" << scan.angle_max << endl;
-        cout << "angle_increment:" << scan.angle_increment << endl;
-        cout << "time_increment:" << scan.time_increment << endl;
-        cout << "range_min:" << scan.range_min << endl;
-        cout << "range_max:" << scan.range_max << endl;
-        cout << "samples_per_scan:" << samples << endl;
+        std::cout << "frame_id:" << scan.header.frame_id << std::endl;
+        std::cout << "min_ang:" << scan.angle_min << std::endl;
+        std::cout << "max_ang:" << scan.angle_max << std::endl;
+        std::cout << "angle_increment:" << scan.angle_increment << std::endl;
+        std::cout << "time_increment:" << scan.time_increment << std::endl;
+        std::cout << "range_min:" << scan.range_min << std::endl;
+        std::cout << "range_max:" << scan.range_max << std::endl;
+        std::cout << "samples_per_scan:" << samples << std::endl;
         return true;
     }
 #endif
@@ -91,7 +91,7 @@ namespace wj_lidar
         scan.ranges.resize(1081);
         scan.intensities.resize(1081);
 
-        cout << "wj_716N_lidar_protocl start success" << endl;
+        std::cout << "wj_716N_lidar_protocl start success" << std::endl;
     }
 
     bool wj_716N_lidar_protocol::dataProcess(unsigned char *data, const int reclen)
@@ -119,7 +119,7 @@ namespace wj_lidar
                     if (OnRecvProcess(&m_sdata.m_acdata[m_sdata.m_u32out], l_u32reallen)) {
                         m_sdata.m_u32out += l_u32reallen;
                     } else {
-                        cout << "continuous search frame header" << endl;
+                        std::cout << "continuous search frame header" << std::endl;
                         m_sdata.m_u32out++;
                     }
                 }
@@ -176,7 +176,7 @@ namespace wj_lidar
             int l_n32Frequency = data[79];
 
             if(l_n32Frequency != freq_scan) {
-                cout << "The scan frequency does not match the one you setted!"<< endl;
+                std::cout << "The scan frequency does not match the one you setted!"<< std::endl;
                 return false;
             }
 

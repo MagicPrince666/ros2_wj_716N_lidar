@@ -13,7 +13,6 @@ using LaserScanMsg = sensor_msgs::LaserScan;
 using LaserScanMsg = sensor_msgs::msg::LaserScan;
 #endif
 
-using namespace std ;
 namespace wj_lidar
 {
 #define MAX_LENGTH_DATA_PROCESS 200000

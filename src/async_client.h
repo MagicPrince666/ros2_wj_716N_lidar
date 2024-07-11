@@ -28,7 +28,7 @@ class Async_Client
 public:
     Async_Client(wj_716N_lidar_protocol *protocol);
     ~Async_Client();
-    bool connect(string ip, int port);
+    bool connect(std::string ip, int port);
     bool disconnect();
     void recvData();
     void reconnect();
@@ -39,7 +39,7 @@ public:
 
 private:
     wj_716N_lidar_protocol *m_pProtocol;
-    string m_sServerIp;
+    std::string m_sServerIp;
     int m_iServerPort;
     boost::asio::io_service m_io;
     boost::asio::ip::tcp::endpoint m_ep;

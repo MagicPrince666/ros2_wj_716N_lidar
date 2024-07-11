@@ -139,7 +139,7 @@ int main(int argc, char **argv)
 
     auto client = std::make_shared<Async_Client>(protocol.get());
     protocol->heartstate = false;
-    rclcpp::Rate loop_5s_rate(5);
+    rclcpp::Rate loop_2s_rate(2);
     while(!client->m_bConnected) {
         RCLCPP_INFO(node->get_logger(), "Start connecting laser!");
         if(client->connect(hostname.c_str(), atoi(port.c_str()))) {
@@ -147,12 +147,14 @@ int main(int argc, char **argv)
         } else {
             RCLCPP_INFO(node->get_logger(), "Failed to connect to laser. Waiting 5s to reconnect!");
         }
-        loop_5s_rate.sleep();
+        loop_2s_rate.sleep();
+        if (!rclcpp::ok()) {
+            break;
+        }
     }
 
-    rclcpp::Rate loop_rate(2);
     while(rclcpp::ok()) {
-        loop_rate.sleep();
+        loop_2s_rate.sleep();
         if(client->m_bConnected) {
             if(protocol->heartstate) {
                 protocol->heartstate = false;
