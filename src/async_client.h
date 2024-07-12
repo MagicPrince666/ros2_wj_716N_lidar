@@ -4,9 +4,6 @@
 #include <stdio.h>
 #include <time.h>
 #include <boost/asio.hpp>
-#include <boost/bind.hpp>
-#include <boost/thread.hpp>
-#include <boost/system/error_code.hpp>
 #include <string>
 #include <unistd.h>
 #include <vector>
@@ -26,8 +23,9 @@ using namespace wj_lidar;
 class Async_Client
 {
 public:
-    Async_Client(wj_716N_lidar_protocol *protocol);
+    Async_Client(std::shared_ptr<wj_716N_lidar_protocol> protocol);
     ~Async_Client();
+
     bool connect(std::string ip, int port);
     bool disconnect();
     void recvData();
@@ -38,13 +36,10 @@ public:
     bool m_bReconnecting;
 
 private:
-    wj_716N_lidar_protocol *m_pProtocol;
+    std::shared_ptr<wj_716N_lidar_protocol> m_pProtocol;
     std::string m_sServerIp;
     int m_iServerPort;
-    boost::asio::io_service m_io;
-    boost::asio::ip::tcp::endpoint m_ep;
     std::shared_ptr<boost::asio::ip::tcp::socket> m_pSocket;
-    boost::system::error_code ec;
     std::thread recv_thread_;
 
     unsigned char m_aucReceiveBuffer[MAX_LENGTH];

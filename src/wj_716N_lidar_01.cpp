@@ -94,7 +94,7 @@ int main(int argc, char **argv)
     f = std::bind(&callback, std::placeholders::_1, std::placeholders::_2);
     server.setCallback(f);
 
-    auto client = std::make_shared<Async_Client>(protocol.get());
+    auto client = std::make_shared<Async_Client>(protocol);
     protocol->heartstate = false;
     while(!client->m_bConnected) {
         ROS_INFO("Start connecting laser!");
@@ -138,7 +138,7 @@ int main(int argc, char **argv)
     std::cout << "laser ip: " << hostname << ", port:" << port << std::endl;
     protocol = std::make_shared<wj_716N_lidar_protocol>(node);
 
-    auto client = std::make_shared<Async_Client>(protocol.get());
+    auto client = std::make_shared<Async_Client>(protocol);
     protocol->heartstate = false;
     rclcpp::Rate loop_2s_rate(2);
     while(!client->m_bConnected) {
