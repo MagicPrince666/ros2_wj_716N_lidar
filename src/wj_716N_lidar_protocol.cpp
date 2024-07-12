@@ -62,7 +62,7 @@ namespace wj_lidar
         total_point = 1081;
 
 #if defined(USE_ROS_NORTIC_VERSION) || defined(USE_ROS_MELODIC_VERSION)
-        marker_pub_ = ros_node_->advertise<LaserScanMsg>("scan", 50);
+        marker_pub_ = std::make_shared<ros::Publisher>(ros_node_->advertise<LaserScanMsg>("scan", 50));
         ros::Time scan_time = ros::Time::now();
         ros_node_->getParam("frame_id", frame_id);
 #else

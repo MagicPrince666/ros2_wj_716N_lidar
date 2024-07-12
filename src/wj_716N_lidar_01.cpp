@@ -1,5 +1,6 @@
 #if defined(USE_ROS_NORTIC_VERSION) || defined(USE_ROS_MELODIC_VERSION)
 #include "ros/ros.h"
+#include <dynamic_reconfigure/server.h>
 #else
 #include "rclcpp/rclcpp.hpp"
 #endif
@@ -60,7 +61,7 @@ static void _signal_handler(int signum)
 /* ------------------------------------------------------------------------------------------
  *  show demo --
  * ------------------------------------------------------------------------------------------ */
-
+std::shared_ptr<wj_716N_lidar_protocol> protocol;
 #if defined(USE_ROS_NORTIC_VERSION) || defined(USE_ROS_MELODIC_VERSION)
 void callback(wj_716N_lidar::wj_716N_lidarConfig &config,uint32_t level)
 {
@@ -87,7 +88,7 @@ int main(int argc, char **argv)
     node->getParam("port", port);
     std::cout << "laser ip: " << hostname << ", port:" << port << std::endl;
 
-    auto protocol = std::make_shared<wj_716N_lidar_protocol>(node);
+    protocol = std::make_shared<wj_716N_lidar_protocol>(node);
     dynamic_reconfigure::Server<wj_716N_lidar::wj_716N_lidarConfig> server;
     dynamic_reconfigure::Server<wj_716N_lidar::wj_716N_lidarConfig>::CallbackType f;
     f = std::bind(&callback, std::placeholders::_1, std::placeholders::_2);
@@ -135,7 +136,7 @@ int main(int argc, char **argv)
     node->get_parameter("hostname", hostname);
     node->get_parameter("port", port);
     std::cout << "laser ip: " << hostname << ", port:" << port << std::endl;
-    auto protocol = std::make_shared<wj_716N_lidar_protocol>(node);
+    protocol = std::make_shared<wj_716N_lidar_protocol>(node);
 
     auto client = std::make_shared<Async_Client>(protocol.get());
     protocol->heartstate = false;
