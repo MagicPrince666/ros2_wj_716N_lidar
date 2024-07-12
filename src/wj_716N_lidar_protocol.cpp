@@ -8,40 +8,40 @@ namespace wj_lidar
     bool wj_716N_lidar_protocol::setConfig(wj_716N_lidar::wj_716N_lidarConfig &new_config, uint32_t level)
     {
         config_ = new_config;
-        scan.header.frame_id = config_.frame_id;
-        scan.angle_min = config_.min_ang;
-        scan.angle_max = config_.max_ang;
-        scan.range_min = config_.range_min;
-        scan.range_max = config_.range_max;
+        scan_msg_.header.frame_id = config_.frame_id;
+        scan_msg_.angle_min = config_.min_ang;
+        scan_msg_.angle_max = config_.max_ang;
+        scan_msg_.range_min = config_.range_min;
+        scan_msg_.range_max = config_.range_max;
         freq_scan = config_.frequency_scan;
 
-        scan.angle_increment = 0.017453 / 4;
+        scan_msg_.angle_increment = 0.017453 / 4;
         if (freq_scan == 1) //0.25°_15hz
         {
-            scan.time_increment = 1 / 15.00000000 / 1440;
+            scan_msg_.time_increment = 1 / 15.00000000 / 1440;
             total_point = 1081;
         }
         else if (freq_scan == 2) //0.25°_25hz
         {
-            scan.time_increment = 1 / 25.00000000 / 1440;
+            scan_msg_.time_increment = 1 / 25.00000000 / 1440;
             total_point = 1081;
         }
 
         // adjust angle_min to min_ang config param
-        index_start = (config_.min_ang + 2.35619449) / scan.angle_increment;
+        index_start = (config_.min_ang + 2.35619449) / scan_msg_.angle_increment;
         // adjust angle_max to max_ang config param
-        index_end = 1081 - ((2.35619449 - config_.max_ang) / scan.angle_increment);
+        index_end = 1081 - ((2.35619449 - config_.max_ang) / scan_msg_.angle_increment);
         int samples = index_end - index_start;
-        scan.ranges.resize(samples);
-        scan.intensities.resize(samples);
+        scan_msg_.ranges.resize(samples);
+        scan_msg_.intensities.resize(samples);
 
-        std::cout << "frame_id:" << scan.header.frame_id << std::endl;
-        std::cout << "min_ang:" << scan.angle_min << std::endl;
-        std::cout << "max_ang:" << scan.angle_max << std::endl;
-        std::cout << "angle_increment:" << scan.angle_increment << std::endl;
-        std::cout << "time_increment:" << scan.time_increment << std::endl;
-        std::cout << "range_min:" << scan.range_min << std::endl;
-        std::cout << "range_max:" << scan.range_max << std::endl;
+        std::cout << "frame_id:" << scan_msg_.header.frame_id << std::endl;
+        std::cout << "min_ang:" << scan_msg_.angle_min << std::endl;
+        std::cout << "max_ang:" << scan_msg_.angle_max << std::endl;
+        std::cout << "angle_increment:" << scan_msg_.angle_increment << std::endl;
+        std::cout << "time_increment:" << scan_msg_.time_increment << std::endl;
+        std::cout << "range_min:" << scan_msg_.range_min << std::endl;
+        std::cout << "range_max:" << scan_msg_.range_max << std::endl;
         std::cout << "samples_per_scan:" << samples << std::endl;
         return true;
     }
@@ -79,17 +79,45 @@ namespace wj_lidar
 
         ros_node_->get_parameter("frame_id", frame_id);
         ros_node_->get_parameter("frequency_scan", freq_scan);
-        ros_node_->get_parameter("min_ang", scan.angle_min);
-        ros_node_->get_parameter("max_ang", scan.angle_max);
-        ros_node_->get_parameter("range_min", scan.range_min);
-        ros_node_->get_parameter("range_max", scan.range_max);
-        ros_node_->get_parameter("angle_increment", scan.angle_increment);
-        ros_node_->get_parameter("time_increment", scan.time_increment);
+        ros_node_->get_parameter("min_ang", scan_msg_.angle_min);
+        ros_node_->get_parameter("max_ang", scan_msg_.angle_max);
+        ros_node_->get_parameter("range_min", scan_msg_.range_min);
+        ros_node_->get_parameter("range_max", scan_msg_.range_max);
+        ros_node_->get_parameter("angle_increment", scan_msg_.angle_increment);
+        ros_node_->get_parameter("time_increment", scan_msg_.time_increment);
+
+        scan_msg_.header.stamp = scan_time;
+        scan_msg_.header.frame_id = frame_id;
+
+        scan_msg_.angle_increment = 0.017453 / 4;
+        if (freq_scan == 1) //0.25°_15hz
+        {
+            scan_msg_.time_increment = 1 / 15.00000000 / 1440;
+            total_point = 1081;
+        }
+        else if (freq_scan == 2) //0.25°_25hz
+        {
+            scan_msg_.time_increment = 1 / 25.00000000 / 1440;
+            total_point = 1081;
+        }
+
+        // adjust angle_min to min_ang config param
+        index_start = (scan_msg_.angle_min + 2.35619449) / scan_msg_.angle_increment;
+        // adjust angle_max to max_ang config param
+        index_end = 1081 - ((2.35619449 - scan_msg_.angle_max) / scan_msg_.angle_increment);
+        int samples = index_end - index_start;
+        scan_msg_.ranges.resize(samples);
+        scan_msg_.intensities.resize(samples);
+
+        std::cout << "frame_id:" << scan_msg_.header.frame_id << std::endl;
+        std::cout << "min_ang:" << scan_msg_.angle_min << std::endl;
+        std::cout << "max_ang:" << scan_msg_.angle_max << std::endl;
+        std::cout << "angle_increment:" << scan_msg_.angle_increment << std::endl;
+        std::cout << "time_increment:" << scan_msg_.time_increment << std::endl;
+        std::cout << "range_min:" << scan_msg_.range_min << std::endl;
+        std::cout << "range_max:" << scan_msg_.range_max << std::endl;
+        std::cout << "samples_per_scan:" << samples << std::endl;
 #endif
-        scan.header.stamp = scan_time;
-        scan.header.frame_id = frame_id;
-        scan.ranges.resize(1081);
-        scan.intensities.resize(1081);
 
         std::cout << "wj_716N_lidar_protocl start success" << std::endl;
     }
@@ -193,7 +221,7 @@ namespace wj_lidar
                                                        ((unsigned char)data[86 + j * 2]);
                         scandata[m_n32currentDataNo] /= 1000.0;
                         scanintensity[m_n32currentDataNo] = 0;
-                        if (scandata[m_n32currentDataNo] > scan.range_max || scandata[m_n32currentDataNo] < scan.range_min || scandata[m_n32currentDataNo] == 0) {
+                        if (scandata[m_n32currentDataNo] > scan_msg_.range_max || scandata[m_n32currentDataNo] < scan_msg_.range_min || scandata[m_n32currentDataNo] == 0) {
                             scandata[m_n32currentDataNo] = NAN;
                         }
                         m_n32currentDataNo++;
@@ -211,11 +239,11 @@ namespace wj_lidar
                 if(m_u32ExpectedPackageNo - 1 == l_n32TotalPackage) {
 
                     for (int i = index_start; i < index_end; i++) {
-                        scan.ranges[i - index_start] = scandata[i];
+                        scan_msg_.ranges[i - index_start] = scandata[i];
                         if(scandata[i - index_start] == NAN) {
-                            scan.intensities[i - index_start] = 0;
+                            scan_msg_.intensities[i - index_start] = 0;
                         } else {
-                            scan.intensities[i - index_start] = scanintensity[i];
+                            scan_msg_.intensities[i - index_start] = scanintensity[i];
                         }
                     }
 
@@ -225,8 +253,8 @@ namespace wj_lidar
 #else
                     rclcpp::Time scan_time = ros_node_->get_clock()->now();
 #endif
-                    scan.header.stamp = scan_time;
-                    marker_pub_->publish(scan);
+                    scan_msg_.header.stamp = scan_time;
+                    marker_pub_->publish(scan_msg_);
                 }
             } 
             return true;

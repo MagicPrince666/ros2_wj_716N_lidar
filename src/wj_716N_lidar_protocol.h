@@ -47,7 +47,7 @@ public:
     rclcpp::Publisher<LaserScanMsg>::SharedPtr marker_pub_;
     rclcpp::TimerBase::SharedPtr laser_timer_;
 #endif
-    LaserScanMsg scan;
+    LaserScanMsg scan_msg_;
     bool heartstate;
 
 private:
