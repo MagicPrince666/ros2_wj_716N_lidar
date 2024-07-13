@@ -39,6 +39,8 @@ private:
     std::shared_ptr<wj_716N_lidar_protocol> m_pProtocol;
     std::string m_sServerIp;
     int m_iServerPort;
+    boost::asio::io_service m_io;
+    boost::asio::ip::tcp::endpoint m_ep;
     std::shared_ptr<boost::asio::ip::tcp::socket> m_pSocket;
     std::thread recv_thread_;
 

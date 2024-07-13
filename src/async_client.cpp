@@ -9,7 +9,7 @@ Async_Client::Async_Client(std::shared_ptr<wj_716N_lidar_protocol> protocol)
     m_pProtocol = protocol;
     m_bConnected = false;
     m_bReconnecting = false;
-    boost::asio::io_service m_io;
+    // boost::asio::io_service m_io;
     m_pSocket = std::shared_ptr<boost::asio::ip::tcp::socket>(new boost::asio::ip::tcp::socket(m_io));
     std::cout << "TCP-Connection is initialized!" << std::endl;
 }
@@ -36,8 +36,9 @@ bool Async_Client::connect(std::string ip, int port)
         }
         m_sServerIp = ip;
         m_iServerPort = port;
-        boost::asio::ip::tcp::endpoint m_ep = boost::asio::ip::tcp::endpoint(boost::asio::ip::address::from_string(ip), port);
+        // boost::asio::ip::tcp::endpoint m_ep = boost::asio::ip::tcp::endpoint(boost::asio::ip::address::from_string(ip), port);
         boost::system::error_code ec;
+        m_ep = boost::asio::ip::tcp::endpoint(boost::asio::ip::address::from_string(ip), port);
         m_pSocket->connect(m_ep, ec);
         if(ec) {
             m_bConnected = false;
