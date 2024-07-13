@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(ros2_wj_716n_lidar)
+project(wj_716n_lidar)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
@@ -60,12 +60,6 @@ if(USE_ROS1_MIDDLE_PRICE)
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
-  dynamic_reconfigure
-)
-
-## Generate dynamic reconfigure parameters in the 'cfg' folder
-generate_dynamic_reconfigure_options(
-    cfg/wj_716N_lidar.cfg
 )
 
 include_directories(
@@ -74,11 +68,10 @@ include_directories(
 
 catkin_package(
   CATKIN_DEPENDS
-  message_runtime
 )
 
 add_executable(${PROJECT_NAME} ${main_srcs})
-add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_gencfg)
+add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 
 install(DIRECTORY ${PROJECT_NAME}

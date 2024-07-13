@@ -5,7 +5,6 @@
 #if defined(USE_ROS_NORTIC_VERSION) || defined(USE_ROS_MELODIC_VERSION)
 #include "ros/ros.h"
 #include <sensor_msgs/LaserScan.h>
-#include <wj_716N_lidar/wj_716N_lidarConfig.h>
 using LaserScanMsg = sensor_msgs::LaserScan;
 #else
 #include "rclcpp/rclcpp.hpp"
@@ -41,11 +40,10 @@ public:
 #if defined(USE_ROS_NORTIC_VERSION) || defined(USE_ROS_MELODIC_VERSION)
     std::shared_ptr<ros::NodeHandle> ros_node_;
     std::shared_ptr<ros::Publisher> marker_pub_;
-    bool setConfig(wj_716N_lidar::wj_716N_lidarConfig &new_config,uint32_t level);
 #else
     std::shared_ptr<rclcpp::Node> ros_node_;
     rclcpp::Publisher<LaserScanMsg>::SharedPtr marker_pub_;
-    rclcpp::TimerBase::SharedPtr laser_timer_;
+    // rclcpp::TimerBase::SharedPtr laser_timer_;
 #endif
     LaserScanMsg scan_msg_;
     bool heartstate;
@@ -53,9 +51,6 @@ public:
 private:
     void movedata(DataCache &sdata);
     DataCache   m_sdata;
-#if defined(USE_ROS_NORTIC_VERSION) || defined(USE_ROS_MELODIC_VERSION)
-    wj_716N_lidar::wj_716N_lidarConfig config_;
-#endif
     uint32_t m_u32PreFrameNo;
     uint32_t m_u32ExpectedPackageNo;
     int m_n32currentDataNo;

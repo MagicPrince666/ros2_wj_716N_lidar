@@ -5,49 +5,6 @@
 namespace wj_lidar
 {
 #if defined(USE_ROS_NORTIC_VERSION) || defined(USE_ROS_MELODIC_VERSION)
-    bool wj_716N_lidar_protocol::setConfig(wj_716N_lidar::wj_716N_lidarConfig &new_config, uint32_t level)
-    {
-        config_ = new_config;
-        scan_msg_.header.frame_id = config_.frame_id;
-        scan_msg_.angle_min = config_.min_ang;
-        scan_msg_.angle_max = config_.max_ang;
-        scan_msg_.range_min = config_.range_min;
-        scan_msg_.range_max = config_.range_max;
-        freq_scan = config_.frequency_scan;
-
-        scan_msg_.angle_increment = 0.017453 / 4;
-        if (freq_scan == 1) //0.25°_15hz
-        {
-            scan_msg_.time_increment = 1 / 15.00000000 / 1440;
-            total_point = 1081;
-        }
-        else if (freq_scan == 2) //0.25°_25hz
-        {
-            scan_msg_.time_increment = 1 / 25.00000000 / 1440;
-            total_point = 1081;
-        }
-
-        // adjust angle_min to min_ang config param
-        index_start = (config_.min_ang + 2.35619449) / scan_msg_.angle_increment;
-        // adjust angle_max to max_ang config param
-        index_end = 1081 - ((2.35619449 - config_.max_ang) / scan_msg_.angle_increment);
-        int samples = index_end - index_start;
-        scan_msg_.ranges.resize(samples);
-        scan_msg_.intensities.resize(samples);
-
-        std::cout << "frame_id:" << scan_msg_.header.frame_id << std::endl;
-        std::cout << "min_ang:" << scan_msg_.angle_min << std::endl;
-        std::cout << "max_ang:" << scan_msg_.angle_max << std::endl;
-        std::cout << "angle_increment:" << scan_msg_.angle_increment << std::endl;
-        std::cout << "time_increment:" << scan_msg_.time_increment << std::endl;
-        std::cout << "range_min:" << scan_msg_.range_min << std::endl;
-        std::cout << "range_max:" << scan_msg_.range_max << std::endl;
-        std::cout << "samples_per_scan:" << samples << std::endl;
-        return true;
-    }
-#endif
-
-#if defined(USE_ROS_NORTIC_VERSION) || defined(USE_ROS_MELODIC_VERSION)
     wj_716N_lidar_protocol::wj_716N_lidar_protocol(std::shared_ptr<ros::NodeHandle> node)
 #else
     wj_716N_lidar_protocol::wj_716N_lidar_protocol(std::shared_ptr<rclcpp::Node> node)
@@ -64,7 +21,14 @@ namespace wj_lidar
 #if defined(USE_ROS_NORTIC_VERSION) || defined(USE_ROS_MELODIC_VERSION)
         marker_pub_ = std::make_shared<ros::Publisher>(ros_node_->advertise<LaserScanMsg>("scan", 50));
         ros::Time scan_time = ros::Time::now();
-        ros_node_->getParam("frame_id", frame_id);
+        ros_node_->getParam("wj_716n_lidar/ros__parameters/frame_id", frame_id);
+        ros_node_->getParam("wj_716n_lidar/ros__parameters/frequency_scan", freq_scan);
+        ros_node_->getParam("wj_716n_lidar/ros__parameters/min_ang", scan_msg_.angle_min);
+        ros_node_->getParam("wj_716n_lidar/ros__parameters/max_ang", scan_msg_.angle_max);
+        ros_node_->getParam("wj_716n_lidar/ros__parameters/range_min", scan_msg_.range_min);
+        ros_node_->getParam("wj_716n_lidar/ros__parameters/range_max", scan_msg_.range_max);
+        ros_node_->getParam("wj_716n_lidar/ros__parameters/angle_increment", scan_msg_.angle_increment);
+        ros_node_->getParam("wj_716n_lidar/ros__parameters/time_increment", scan_msg_.time_increment); 
 #else
         marker_pub_ = ros_node_->create_publisher<LaserScanMsg>("scan", 50);
         rclcpp::Time scan_time = ros_node_->get_clock()->now();
@@ -84,8 +48,8 @@ namespace wj_lidar
         ros_node_->get_parameter("range_min", scan_msg_.range_min);
         ros_node_->get_parameter("range_max", scan_msg_.range_max);
         ros_node_->get_parameter("angle_increment", scan_msg_.angle_increment);
-        ros_node_->get_parameter("time_increment", scan_msg_.time_increment);
-
+        ros_node_->get_parameter("time_increment", scan_msg_.time_increment); 
+#endif
         scan_msg_.header.stamp = scan_time;
         scan_msg_.header.frame_id = frame_id;
 
@@ -117,7 +81,6 @@ namespace wj_lidar
         std::cout << "range_min:" << scan_msg_.range_min << std::endl;
         std::cout << "range_max:" << scan_msg_.range_max << std::endl;
         std::cout << "samples_per_scan:" << samples << std::endl;
-#endif
 
         std::cout << "wj_716N_lidar_protocl start success" << std::endl;
     }
